@@ -42,10 +42,12 @@ unsigned int gCurStep = 0;
 const uint32_t COLOR_BLACK = pixels.Color(0, 0, 0);
 const uint32_t COLOR_PURPLE = pixels.Color(169, 0, 255);
 const uint32_t COLOR_ORANGE = pixels.Color(255, 130, 0);
+const uint32_t COLOR_SRED = pixels.Color(10, 0, 0);
 
 //uint8_t gColorR, gColorG, gColorB;
 //uint32_t gColor = pixels.Color(0, 0, 0);
-uint32_t gColor = COLOR_PURPLE;
+//uint32_t gColor = COLOR_PURPLE;
+uint32_t gColor = COLOR_SRED;
 
 // gLastColor MUST be different than gColor
 uint32_t gLastColor = COLOR_BLACK;
@@ -209,7 +211,7 @@ void chase() {
             pixels.setPixelColor(LEDS_LAYOUT[i][gChaseLastILed[i]], 0);
 
         gChaseLastILed[i]++;
-        if (gChaseLastILed[i] >= gLAST_LED_OF_GROUP[i])
+        if (gChaseLastILed[i] > gLAST_LED_OF_GROUP[i])
             gChaseLastILed[i] = 0;
         pixels.setPixelColor(LEDS_LAYOUT[i][gChaseLastILed[i]], gColor);
     }
