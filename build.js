@@ -7,19 +7,19 @@ var fs = require('fs');
 var fse = require('fs-extra');
 
 var cfg = {
-    masks: ["bird", "dancyskull", "dedebiabolo", "filoudevil", "foxynico",
+    masks: ["test", "bird", "dancyskull", "dedebiabolo", "filoudevil", "foxynico",
             "jaguar", "joparrot", "skullybeno", "sorcerer", "minijag"],
-    
+
     dependencies: ["leds_layout.h", "router_config.h", "wifi_host_config.h"],
-    
+
     mainInoSrc: "zmlserver.ino",
-    
+
     common_dir: path.join('.', 'common'),
-    
+
     masks_dir: path.join('.', 'masks'),
-    
+
     target_dir: path.join('.', 'generated'),
-    
+
     mainInoPrefix: "zml_wss_"
 };
 
