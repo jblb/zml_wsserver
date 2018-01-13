@@ -239,11 +239,11 @@ void doubleChase() {
 
         if (gDoubleChaseDir[i] == 0) {
             gChaseLastILed[i]++;
-            if (gChaseLastILed[i] >= gLAST_LED_OF_GROUP[i]) {
+            if (gChaseLastILed[i] > gLAST_LED_OF_GROUP[i]) {
                 gDoubleChaseDir[i] = -1;
-                gChaseLastILed[i]++;
+                gChaseLastILed[i]--;
                 if (gLAST_LED_OF_GROUP[i] > 1)
-                    gChaseLastILed[i]++;
+                    gChaseLastILed[i]--;
             }
         } else {
             gChaseLastILed[i]--;
