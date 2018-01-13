@@ -530,7 +530,7 @@ void setup() {
         delay(1000);
     }
 
-    WiFi.disconnect();
+    // WiFi.disconnect();
     pixels.begin();
     helloPixels();
 
