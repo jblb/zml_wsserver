@@ -17,7 +17,7 @@
 
 #define USE_SERIAL Serial
 
-#define CMD_PIN D2
+#define CMD_PIN D3
 
 #define BIG_TICK 42
 
