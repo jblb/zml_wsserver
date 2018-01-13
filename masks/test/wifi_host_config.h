@@ -1,7 +1,7 @@
 #ifndef WIFI_HOST_CONFIG_H_
 #define WIFI_HOST_CONFIG_H_
 
-#define MY_HOSTNAME "FilouDevil"
+#define MY_HOSTNAME "Test"
 #define USE_STATIC_IP 0
 
 #if USE_STATIC_IP
