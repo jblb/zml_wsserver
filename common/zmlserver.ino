@@ -58,7 +58,7 @@ uint16_t gVariableDChaseDelay = 2000;
 
 void initLedLayoutData() {
     gLAST_LED_OF_GROUP = new uint8_t[NB_LED_GROUPS];
-    
+
     uint8_t iled = -1;
     for (uint8_t i = 0; i < NB_LED_GROUPS; i++) {
         iled = -1;
@@ -68,7 +68,7 @@ void initLedLayoutData() {
             j++;
         }
         gLAST_LED_OF_GROUP[i] = iled;
-    } 
+    }
 }
 
 void printLedLayoutData() {
@@ -133,7 +133,7 @@ void continuous() {
 int setSpeedDivisor(uint8_t aDivisor) {
     if (aDivisor > MAX_SPEED_DIVISOR)
         aDivisor = MAX_SPEED_DIVISOR;
-    
+
     return aDivisor;
 }
 
@@ -207,13 +207,13 @@ void chase() {
     for (uint8_t i = 0; i < NB_LED_GROUPS; i++) {
         if (gChaseLastILed[i] >= 0)
             pixels.setPixelColor(LEDS_LAYOUT[i][gChaseLastILed[i]], 0);
-        
+
         gChaseLastILed[i]++;
         if (gChaseLastILed[i] >= gLAST_LED_OF_GROUP[i])
             gChaseLastILed[i] = 0;
         pixels.setPixelColor(LEDS_LAYOUT[i][gChaseLastILed[i]], gColor);
     }
-    
+
     pixels.show();
     setDelay(gVariableChaseDelay);
 }
@@ -234,7 +234,7 @@ void doubleChase() {
     for (uint8_t i = 0; i < NB_LED_GROUPS; i++) {
         if (gChaseLastILed[i] >= 0)
             pixels.setPixelColor(LEDS_LAYOUT[i][gChaseLastILed[i]], 0);
-        
+
         if (gDoubleChaseDir[i] == 0) {
             gChaseLastILed[i]++;
             if (gChaseLastILed[i] >= gLAST_LED_OF_GROUP[i]) {
@@ -264,7 +264,7 @@ void doubleChase() {
 void setStepFactorGB4(uint8_t aFactor, uint8_t &aStepFactor) {
     if (aFactor == aStepFactor)
         return;
-    
+
     if (aFactor < 1)
         aStepFactor = 1;
     else if (aFactor > MAX_STEP_FACTOR_GB4)
@@ -277,12 +277,12 @@ void gradientsBy4
 (uint32_t aColor1, uint8_t aNbSteps1, uint32_t aColor2, uint8_t aNbSteps2,
  uint32_t aColor3, uint8_t aNbSteps3, uint32_t aColor4, uint8_t aNbSteps4,
  uint16_t &aLastStep, uint8_t &aStepFactor, uint8_t &aLastStepFactor) {
-    
+
     if (aStepFactor != aLastStepFactor) {
         aLastStep = aLastStep * aStepFactor / aLastStepFactor;
         aLastStepFactor = aStepFactor;
     }
-    
+
     aLastStep++;
     uint16_t step = aLastStep;
     uint32_t color, color1, color2;
@@ -311,7 +311,7 @@ void gradientsBy4
         step = step - (aNbSteps1 + aNbSteps2 + aNbSteps3) * aStepFactor;
         nbSteps = aNbSteps4 * aStepFactor;
     }
-    
+
     if (step == 0) {
         color = color1;
     } else {
@@ -321,7 +321,7 @@ void gradientsBy4
         uint8_t r2 = (uint8_t) (color2 >> 16);
         uint8_t g2 = (uint8_t) (color2 >> 8);
         uint8_t b2 = (uint8_t) color2;
-        
+
         uint8_t r = r1 + step * (r2 - r1) / (nbSteps + 2);
         uint8_t g = g1 + step * (g2 - g1) / (nbSteps + 2);
         uint8_t b = b1 + step * (b2 - b1) / (nbSteps + 2);
@@ -356,14 +356,14 @@ void heart() {
 double h2rgb(double aV1, double aV2, uint8_t aH) {
     if (aH < 0) aH += 6;
     if (aH > 6) aH -= 6;
-    
+
     if (aH < 1)
         return aV1 + (aV2 - aV1) * aH;
     if (aH < 3)
         return aV2;
     if (aH < 4)
         return aV1 + (aV2 - aV1) * (4 - aH);
-    
+
     return aV1;
 }
 
@@ -376,21 +376,21 @@ void initTint2rgb() {
         TINT2RGB_V2  = TINT2RGB_L * (1 + TINT2RGB_S);
     else
         TINT2RGB_V2  = TINT2RGB_L + TINT2RGB_S - (TINT2RGB_L * TINT2RGB_S);
-    
+
     TINT2RGB_V1 = (2 * TINT2RGB_L - TINT2RGB_V2);
 }
 
 uint32_t tint2rgb(uint16_t aTint) {
     if (aTint > 360)
         aTint = 360;
-    
+
     // simplified hsl to rgb conversion, because s and l are fixed and > 0
-    
+
     uint8_t hr = aTint / 60;
     uint8_t r = (uint8_t) (255 * h2rgb(TINT2RGB_V1, TINT2RGB_V2, (hr + 2)));
     uint8_t g = (uint8_t) (255 * h2rgb(TINT2RGB_V1, TINT2RGB_V2, hr));
     uint8_t b = (uint8_t) (255 * h2rgb(TINT2RGB_V1, TINT2RGB_V2, (hr - 2)));
-    
+
     Serial.printf("r: %d, g: %d, b: %d", r, g, b);
     return pixels.Color(r, g, b);
 }
@@ -405,7 +405,7 @@ void paintRandomColors() {
 }
 
 void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t lenght) {
-    
+
     switch(type) {
         case WStype_DISCONNECTED:
             USE_SERIAL.printf("[%u] Disconnected!\n", num);
@@ -419,15 +419,15 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t lenght
             String text = String((char *) &payload[0]);
             const char*  chars_payload = (const char *) payload;
             int text_length = strlen(chars_payload);
-            
+
             USE_SERIAL.printf("[%u] get command: %s\n", num, payload);
             // send message to client
             webSocket.sendTXT(num, "received command: " + text);
-            
+
             int r, g, b;
             int s;
             int res;
-            
+
             if (text == "ping") {
                 webSocket.sendTXT(num, "pong");
             } else if (text == "black" || text == "blackout") {
@@ -490,7 +490,7 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t lenght
                     }
                 }
             }
-            
+
             // send data to all connected clients
             // webSocket.broadcastTXT("message here");
             break;
@@ -521,7 +521,7 @@ void setup() {
     gDoubleChaseDir = new uint8_t[NB_LED_GROUPS];
 
     //printLedLayoutData();
-    
+
     for(uint8_t t = 4; t > 0; t--) {
         USE_SERIAL.printf("[SETUP] BOOT WAIT %d...\n", t);
         USE_SERIAL.flush();
@@ -531,7 +531,7 @@ void setup() {
     WiFi.disconnect();
     pixels.begin();
     helloPixels();
-    
+
     WiFi.hostname(MY_HOSTNAME);
     WiFi.mode(WIFI_STA);
     Serial.printf("Wi-Fi mode set to WIFI_STA %s\n", WiFi.mode(WIFI_STA) ? "" : "Failed!");
@@ -539,16 +539,16 @@ void setup() {
     // Doc says it should be faster
     WiFi.config(staticIP, gateway, subnet);
 #endif
-    
+
     WiFi.begin(MY_SSID, MY_PASSWORD);
 
     while(WiFi.status() != WL_CONNECTED) {
-        delay(100);
+        delay(500);
         Serial.print(".");
     }
     Serial.println();
     helloPixels();
-    
+
     Serial.print("Connected, IP address: ");
     Serial.println(WiFi.localIP());
     Serial.print("MAC: ");
@@ -559,21 +559,21 @@ void setup() {
     Serial.print("subnet mask: ");
     Serial.println(WiFi.subnetMask());
     Serial.printf("Connection status: %d\n", WiFi.status());
-    
+
 //    WiFiMulti.addAP("MY_SSID", "MY_PASSWORD");
 //    while(WiFiMulti.run() != WL_CONNECTED) {
 //        delay(100);
 //    }
-    
+
     initTint2rgb();
-    
+
     webSocket.begin();
     webSocket.onEvent(webSocketEvent);
 }
 
 void loop() {
     webSocket.loop();
-    
+
     if (gNextActionTime != -1 && gNextActionTime <= millis()) {
         gCurrentAction();
     }
