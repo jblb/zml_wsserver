@@ -598,6 +598,7 @@ void setup() {
 //    }
 
     initTint2rgb();
+    pixels.setBrightness(255);
 
     webSocket.begin();
     webSocket.onEvent(webSocketEvent);
