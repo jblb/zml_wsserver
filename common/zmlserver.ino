@@ -46,8 +46,8 @@ const uint32_t COLOR_SRED = pixels.Color(10, 0, 0);
 
 //uint8_t gColorR, gColorG, gColorB;
 //uint32_t gColor = pixels.Color(0, 0, 0);
-//uint32_t gColor = COLOR_PURPLE;
-uint32_t gColor = COLOR_SRED;
+uint32_t gColor = COLOR_PURPLE;
+// uint32_t gColor = COLOR_SRED;
 
 // gLastColor MUST be different than gColor
 uint32_t gLastColor = COLOR_BLACK;
@@ -261,6 +261,17 @@ void doubleChase() {
     setDelay(gVariableDChaseDelay);
 }
 
+void doWipe() {
+    blackOut();
+    gCurrentAction = &wipe;
+}
+
+void wipe () {
+	USE_SERIAL.print("wipe ...\n");
+	pixels.show();
+	setDelay(gVariableDChaseDelay);
+}
+
 #define MAX_STEP_FACTOR_GB4 100
 
 void setStepFactorGB4(uint8_t aFactor, uint8_t &aStepFactor) {
@@ -393,7 +404,7 @@ uint32_t tint2rgb(uint16_t aTint) {
     uint8_t g = (uint8_t) (255 * h2rgb(TINT2RGB_V1, TINT2RGB_V2, hr));
     uint8_t b = (uint8_t) (255 * h2rgb(TINT2RGB_V1, TINT2RGB_V2, (hr - 2)));
 
-    Serial.printf("r: %d, g: %d, b: %d", r, g, b);
+    // Serial.printf("r: %d, g: %d, b: %d", r, g, b);
     return pixels.Color(r, g, b);
 }
 
@@ -405,6 +416,18 @@ void paintRandomColors() {
     }
     pixels.show();
 }
+
+void doRandomColors() {
+    blackOut();
+    gCurrentAction = &randomcolors;
+    randomcolors();
+}
+
+void randomcolors () {
+    paintRandomColors();
+    setDelay(gVariableDChaseDelay);
+	}
+
 
 void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t lenght) {
 
@@ -436,7 +459,6 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t lenght
                 gCurrentAction = &blackOut;
                 blackOut();
                 setDelay(-1);
-                USE_SERIAL.print("all leds should be turned off now...\n");
             } else if (text == "continuous") {
                 doContinuous();
             } else if (text == "color:purple") {
@@ -451,13 +473,15 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t lenght
                 doDoubleChase();
             } else if (text == "heart") {
                 doHeart();
+            } else if (text == "wipe") {
+				doWipe();
             } else if (text == "random") {
-                USE_SERIAL.print("receive random command\n");
                 paintRandomColors();
                 setDelay(-1);
-                USE_SERIAL.print("random pixel colors should be painted...\n");
-            } else if (text_length == 12 || text_length == 13) {
-                USE_SERIAL.print("text_length = 12 or 13\n");
+            } else if (text == "random_move") {
+                doRandomColors();
+            } else if (text_length == 12 || text_length == 13 || text_length == 14) {
+                USE_SERIAL.print("text_length = 12, 13 or 14\n");
                 res = sscanf(chars_payload, "color:#%02x%02x%02x", &r, &g, &b);
                 if (res == 3) {
                     USE_SERIAL.printf("found: %u, r: %u, g: %u, b: %u\n",
@@ -486,7 +510,13 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t lenght
                                     USE_SERIAL.printf("heartspeed: %d\n", s);
                                     // we want in fact the opposite of s
                                     setHeartStepFactor(-s);
-                                }
+                                } else {
+									res = sscanf(chars_payload, "brightness:%d", &s);
+									if (res ==1) {
+										USE_SERIAL.printf("brightness: %d\n", s);
+										pixels.setBrightness(s);
+									}
+								}
                             }
                         }
                     }
