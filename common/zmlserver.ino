@@ -8,12 +8,17 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266WiFiMulti.h>
 #include <WebSocketsServer.h>
+#include <ESP8266WebServer.h>
+#include <DNSServer.h>
 #include <Hash.h>
 #include <Adafruit_NeoPixel.h>
+#include "FS.h"
 
 #include "router_config.h"
 #include "wifi_host_config.h"
 #include "leds_layout.h"
+
+#define PORT 80
 
 #define USE_SERIAL Serial
 
@@ -25,13 +30,13 @@
 
 #define MAX_SPEED_DIVISOR 50
 
-//ESP8266WiFiMulti WiFiMulti;
-
 WebSocketsServer webSocket = WebSocketsServer(81);
 
 Adafruit_NeoPixel pixels(NUM_PIXELS, CMD_PIN, NEO_GRB | NEO_KHZ800);
 
 uint8_t *gLAST_LED_OF_GROUP;
+
+ESP8266WebServer http_server(PORT);
 
 void (*gCurrentAction)();
 
@@ -507,6 +512,8 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t lenght
     }
 
 }
+void GetMessage() {
+}
 
 void setup() {
     // USE_SERIAL.begin(921600);
@@ -568,6 +575,9 @@ void setup() {
 //    }
 
     initTint2rgb();
+
+    http_server.begin();
+    http_server.on("/", GetMessage);
 
     webSocket.begin();
     webSocket.onEvent(webSocketEvent);
