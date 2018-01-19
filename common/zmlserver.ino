@@ -14,9 +14,21 @@
 #include <Hash.h>
 #include <WebSocketsServer.h>
 
+
 #include "leds_layout.h"
 #include "router_config.h"
 #include "wifi_host_config.h"
+
+#ifdef SOFT_AP
+
+#include <DNSServer.h>
+
+  // DNS server
+  const byte DNS_PORT = 53;
+  DNSServer dnsServer;
+  IPAddress apIP(192, 168, 4, 1);
+  IPAddress netMsk(255, 255, 255, 0);
+#endif
 
 #define PORT 80
 
@@ -51,8 +63,8 @@ const uint32_t COLOR_SRED = pixels.Color(10, 0, 0);
 
 // uint8_t gColorR, gColorG, gColorB;
 // uint32_t gColor = pixels.Color(0, 0, 0);
-// uint32_t gColor = COLOR_PURPLE;
-uint32_t gColor = COLOR_SRED;
+uint32_t gColor = COLOR_PURPLE;
+//uint32_t gColor = COLOR_SRED;
 
 // gLastColor MUST be different than gColor
 uint32_t gLastColor = COLOR_BLACK;
@@ -578,6 +590,8 @@ bool handleFileRead(String path) {
   USE_SERIAL.println("handleFileRead: " + path);
   if (path.endsWith("/"))
     path += "index.html";
+  if (path.endsWith("/generate_204")) // android captive portal.
+    path = "/index.html";
   String contentType = getContentType(path);
   String pathWithGz = path + ".gz";
   if (SPIFFS.exists(pathWithGz) || SPIFFS.exists(path)) {
@@ -626,9 +640,13 @@ String fileRead(String name) {
 }
 
 void handleServerlist() {
-  USE_SERIAL.println("handleFile serveurs.js");
+	USE_SERIAL.println("handleFileRead: /serveurs.js");
   String webscript = fileRead("/serveurs.js");
+#ifndef SOFT_AP
   String ipaddress = WiFi.localIP().toString();
+#else
+  String ipaddress = WiFi.softAPIP().toString();
+#endif
   webscript.replace("ipaddress", ipaddress);
   http_server.send(200, "application/javascript", webscript);
 }
@@ -674,10 +692,14 @@ void setup() {
   pixels.setBrightness(255); // full
   helloPixels();
 
+#ifndef SOFT_AP
+
   WiFi.hostname(MY_HOSTNAME);
   WiFi.mode(WIFI_STA);
-  Serial.printf("Wi-Fi mode set to WIFI_STA %s\n",
+  USE_SERIAL.printf("Wi-Fi mode set to WIFI_STA %s\n",
                 WiFi.mode(WIFI_STA) ? "" : "Failed!");
+
+
 #if USE_STATIC_IP
   // Doc says it should be faster
   WiFi.config(staticIP, gateway, subnet);
@@ -689,6 +711,23 @@ void setup() {
     delay(500);
     Serial.print(".");
   }
+#else // SOFT_AP
+
+  WiFi.mode(WIFI_AP);
+  WiFi.softAPConfig(apIP, apIP, netMsk);
+  USE_SERIAL.print("Setting soft-AP ... ");
+  USE_SERIAL.println(WiFi.softAP("mllc") ? "Ready" : "Failed!");
+  WiFi.hostname(MY_HOSTNAME);
+  USE_SERIAL.print("IP address: ");
+  USE_SERIAL.println(WiFi.softAPIP());
+
+  /* Setup the DNS server redirecting all the domains to the apIP */
+  dnsServer.setErrorReplyCode(DNSReplyCode::NoError);
+  dnsServer.start(DNS_PORT, "*", WiFi.softAPIP());
+
+
+#endif //
+
   Serial.println();
   helloPixels();
 
@@ -715,9 +754,12 @@ void setup() {
   // from FSBrower.ino
   // called when the url is not defined here
   // use it to load content from SPIFFS
+
   http_server.onNotFound([]() {
-    if (!handleFileRead(http_server.uri()))
+    if (!handleFileRead(http_server.uri())){
+      USE_SERIAL.println("file not found");
       http_server.send(404, "text/plain", "FileNotFound");
+  }
   });
 
   webSocket.begin();
@@ -727,7 +769,9 @@ void setup() {
 void loop() {
   webSocket.loop();
   http_server.handleClient();
-
+#ifdef SOFT_AP
+   dnsServer.processNextRequest();
+#endif
   if (gNextActionTime != -1 && gNextActionTime <= millis()) {
     gCurrentAction();
   }
