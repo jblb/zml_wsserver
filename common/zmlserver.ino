@@ -398,7 +398,7 @@ uint32_t tint2rgb(uint16_t aTint) {
   uint8_t g = (uint8_t)(255 * h2rgb(TINT2RGB_V1, TINT2RGB_V2, hr));
   uint8_t b = (uint8_t)(255 * h2rgb(TINT2RGB_V1, TINT2RGB_V2, (hr - 2)));
 
-  Serial.printf("r: %d, g: %d, b: %d", r, g, b);
+
   return pixels.Color(r, g, b);
 }
 
@@ -410,6 +410,17 @@ void paintRandomColors() {
   }
   pixels.show();
 }
+
+void doRandomColorsMove(){
+  blackOut();
+  gCurrentAction = &RandomColorsMove;
+  RandomColorsMove();
+	}
+
+void RandomColorsMove(){
+	paintRandomColors();
+	setDelay(gVariableDChaseDelay);
+	}
 
 void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload,
                     size_t lenght) {
@@ -464,6 +475,8 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload,
       paintRandomColors();
       setDelay(-1);
       USE_SERIAL.print("random pixel colors should be painted...\n");
+	} else if (text == "random_move") {
+      doRandomColorsMove();
     } else if (text_length == 12 || text_length == 13 || text_length == 14) {
       USE_SERIAL.print("text_length = 12, 13 or 14\n");
       res = sscanf(chars_payload, "color:#%02x%02x%02x", &r, &g, &b);
