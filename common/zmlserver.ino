@@ -461,8 +461,8 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t lenght
                 paintRandomColors();
                 setDelay(-1);
                 USE_SERIAL.print("random pixel colors should be painted...\n");
-            } else if (text_length == 12 || text_length == 13) {
-                USE_SERIAL.print("text_length = 12 or 13\n");
+            } else if (text_length == 12 || text_length == 13 || text_length == 14) {
+                USE_SERIAL.print("text_length = 12, 13 or 14\n");
                 res = sscanf(chars_payload, "color:#%02x%02x%02x", &r, &g, &b);
                 if (res == 3) {
                     USE_SERIAL.printf("found: %u, r: %u, g: %u, b: %u\n",
@@ -491,7 +491,14 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t lenght
                                     USE_SERIAL.printf("heartspeed: %d\n", s);
                                     // we want in fact the opposite of s
                                     setHeartStepFactor(-s);
-                                }
+                                } else {
+									res = sscanf(chars_payload, "brightness:%d", &s);
+									if (res == 1) {
+                                    USE_SERIAL.printf("brightness: %d\n", s);
+                                    // we want in fact the opposite of s
+                                    pixels.setBrightness(s);
+									}
+								}
                             }
                         }
                     }
@@ -539,6 +546,7 @@ void setup() {
 
     // WiFi.disconnect();
     pixels.begin();
+    pixels.setBrightness(255); // full
     helloPixels();
 
     WiFi.hostname(MY_HOSTNAME);
