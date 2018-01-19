@@ -398,7 +398,6 @@ uint32_t tint2rgb(uint16_t aTint) {
   uint8_t g = (uint8_t)(255 * h2rgb(TINT2RGB_V1, TINT2RGB_V2, hr));
   uint8_t b = (uint8_t)(255 * h2rgb(TINT2RGB_V1, TINT2RGB_V2, (hr - 2)));
 
-
   return pixels.Color(r, g, b);
 }
 
@@ -411,16 +410,16 @@ void paintRandomColors() {
   pixels.show();
 }
 
-void doRandomColorsMove(){
+void doRandomColorsMove() {
   blackOut();
   gCurrentAction = &RandomColorsMove;
   RandomColorsMove();
-	}
+}
 
-void RandomColorsMove(){
-	paintRandomColors();
-	setDelay(gVariableDChaseDelay);
-	}
+void RandomColorsMove() {
+  paintRandomColors();
+  setDelay(gVariableDChaseDelay);
+}
 
 void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload,
                     size_t lenght) {
@@ -475,7 +474,7 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload,
       paintRandomColors();
       setDelay(-1);
       USE_SERIAL.print("random pixel colors should be painted...\n");
-	} else if (text == "random_move") {
+    } else if (text == "random_move") {
       doRandomColorsMove();
     } else if (text_length == 12 || text_length == 13 || text_length == 14) {
       USE_SERIAL.print("text_length = 12, 13 or 14\n");
@@ -592,41 +591,41 @@ bool handleFileRead(String path) {
   return false;
 }
 
-String fileRead(String name){
-  //read file from SPIFFS and store it as a String variable
+String fileRead(String name) {
+  // read file from SPIFFS and store it as a String variable
   String contents;
   File file = SPIFFS.open(name.c_str(), "r");
   if (!file) {
     String errorMessage = "Can't open '" + name + "' !\r\n";
     USE_SERIAL.println(errorMessage);
     return "FILE ERROR";
-  }
-  else {
+  } else {
 
-    // this is going to get the number of bytes in the file and give us the value in an integer
+    // this is going to get the number of bytes in the file and give us the
+    // value in an integer
     int fileSize = file.size();
-    int chunkSize=1024;
-    //This is a character array to store a chunk of the file.
-    //We'll store 1024 characters at a time
+    int chunkSize = 1024;
+    // This is a character array to store a chunk of the file.
+    // We'll store 1024 characters at a time
     char buf[chunkSize];
-    int numberOfChunks=(fileSize/chunkSize)+1;
+    int numberOfChunks = (fileSize / chunkSize) + 1;
 
-    int count=0;
-    int remainingChunks=fileSize;
-    for (int i=1; i <= numberOfChunks; i++){
-      if (remainingChunks-chunkSize < 0){
-        chunkSize=remainingChunks;
+    int count = 0;
+    int remainingChunks = fileSize;
+    for (int i = 1; i <= numberOfChunks; i++) {
+      if (remainingChunks - chunkSize < 0) {
+        chunkSize = remainingChunks;
       }
-      file.read((uint8_t *)buf, chunkSize-1);
-      remainingChunks=remainingChunks-chunkSize;
-      contents+=String(buf);
+      file.read((uint8_t *)buf, chunkSize - 1);
+      remainingChunks = remainingChunks - chunkSize;
+      contents += String(buf);
     }
     file.close();
     return contents;
   }
 }
 
-void handleServerlist(){
+void handleServerlist() {
   USE_SERIAL.println("handleFile serveurs.js");
   String webscript = fileRead("/serveurs.js");
   String ipaddress = WiFi.localIP().toString();
@@ -712,7 +711,7 @@ void setup() {
   initTint2rgb();
 
   http_server.begin();
-  http_server.on ("/serveurs.js", HTTP_GET, handleServerlist);
+  http_server.on("/serveurs.js", HTTP_GET, handleServerlist);
   // from FSBrower.ino
   // called when the url is not defined here
   // use it to load content from SPIFFS
