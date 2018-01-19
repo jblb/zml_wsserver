@@ -1,53 +1,5 @@
 'use strict';
 
-var gServers = [
-    {
-        name: 'Test', // test
-        url: 'ws:/192.168.0.107:81'
-    },
-    {
-        name: 'Grosse caisse', // JoParrot
-        url: 'ws:/192.168.2.18:81'
-    },
-    {
-        name: 'Caisse claire', // Bird
-        url: 'ws:/192.168.2.10:81'
-    },
-    {
-        name: 'Sousaphone', // SkullyBeno
-        url: 'ws:/192.168.2.12:81'
-    },
-    {
-        name: 'Banjo', // FoxyNico
-        //url: 'ws:/192.168.0.42:81',
-        url: 'ws:/192.168.2.13:81'
-    },
-    {
-        name: 'Trompette', // DedeBiabolo
-        url: 'ws:/192.168.2.17:81'
-    },
-    {
-        name: 'Trombone', // Jaguar
-        url: 'ws:/192.168.2.15:81'
-    },
-    {
-        name: 'Sax Baryton', // FilouDevil
-        url: 'ws:/192.168.2.14:81'
-    },
-    {
-        name: 'Danseur Sorcier', // Sorcerer
-        url: 'ws:/192.168.2.11:81'
-    },
-    {
-        name: 'Danseur BBoy', // DancySkull
-        url: 'ws:/192.168.2.16:81'
-    },
-    {
-        name: 'Bâton', // MiniJag
-        url: 'ws:/192.168.2.19:81'
-    },
-];
-
 function $(expr) {
     return document.querySelector(expr);
 }

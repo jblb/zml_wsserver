@@ -592,6 +592,48 @@ bool handleFileRead(String path) {
   return false;
 }
 
+String fileRead(String name){
+  //read file from SPIFFS and store it as a String variable
+  String contents;
+  File file = SPIFFS.open(name.c_str(), "r");
+  if (!file) {
+    String errorMessage = "Can't open '" + name + "' !\r\n";
+    USE_SERIAL.println(errorMessage);
+    return "FILE ERROR";
+  }
+  else {
+
+    // this is going to get the number of bytes in the file and give us the value in an integer
+    int fileSize = file.size();
+    int chunkSize=1024;
+    //This is a character array to store a chunk of the file.
+    //We'll store 1024 characters at a time
+    char buf[chunkSize];
+    int numberOfChunks=(fileSize/chunkSize)+1;
+
+    int count=0;
+    int remainingChunks=fileSize;
+    for (int i=1; i <= numberOfChunks; i++){
+      if (remainingChunks-chunkSize < 0){
+        chunkSize=remainingChunks;
+      }
+      file.read((uint8_t *)buf, chunkSize-1);
+      remainingChunks=remainingChunks-chunkSize;
+      contents+=String(buf);
+    }
+    file.close();
+    return contents;
+  }
+}
+
+void handleServerlist(){
+  USE_SERIAL.println("handleFile serveurs.js");
+  String webscript = fileRead("/serveurs.js");
+  String ipaddress = WiFi.localIP().toString();
+  webscript.replace("ipaddress", ipaddress);
+  http_server.send(200, "application/javascript", webscript);
+}
+
 void setup() {
   // USE_SERIAL.begin(921600);
   USE_SERIAL.begin(115200);
@@ -670,6 +712,7 @@ void setup() {
   initTint2rgb();
 
   http_server.begin();
+  http_server.on ("/serveurs.js", HTTP_GET, handleServerlist);
   // from FSBrower.ino
   // called when the url is not defined here
   // use it to load content from SPIFFS
