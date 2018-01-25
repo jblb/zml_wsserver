@@ -1,0 +1,273 @@
+<!DOCTYPE HTML>
+<html lang='fr'>
+
+<head>
+    <META HTTP-EQUIV='Content-Type' CONTENT='text/html; charset=utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Multi LED Lights Control</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="./mllc.css">
+    <style>
+    </style>
+    <script>
+    </script>
+</head>
+<body>
+
+<div id="page" class="container">
+
+    <header>
+        <h1 class="main-title">Multi LED Lights Control</h1>
+    </header>
+
+    <section id="status-box">
+        <div id="status-box-inner">
+            <button id="stati-bt" style="float: right;">
+                <span id="stati-bt-icon" aria-hidden="true">▼</span>
+                <span class="sr-only">voir</span>
+            </button>
+            <div id="main-status-box"></div>
+            <div id="substatus-block">
+                <div id="substatus-box"></div>
+                <div id="substatus-tools">
+                    <button id="select-all-masks-bt">Tous</button>
+                    <button id="unselect-all-masks-bt">Aucun</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="responses-box">
+        <h5>
+            Messages des serveurs&nbsp;:
+            <button id="responses-bt">
+                <span id="responses-bt-icon" aria-hidden="true">▼</span>
+                <span class="sr-only">voir</span>
+            </button>
+        </h5>
+        <textarea id="responses-textarea" name="responses-textarea"
+                  maxlength="20" rows="5" cols="40" readonly></textarea>
+    </section>
+
+    <section class="commands-box">
+        <h3>Commandes</h3>
+
+        <div class="cmd-boxes">
+            <div class="cmd-box">
+                <button class="cmd-bt" data-cmd="continuous">
+                    Plein feu
+                </button>
+            </div>
+            <div class="cmd-box cmd-slidebox">
+                <button class="cmd-bt" data-cmd="blink">
+                    Clignoter
+                </button>
+                <label>
+                    <small>Vitesse&nbsp;:</small>
+                    <input class="cmd-slider" type="range" data-cmd="blinkspeed:"
+                           min="2" max="24" step="1" value="2">
+                </label>
+            </div>
+            <div class="cmd-box cmd-slidebox">
+                <button class="cmd-bt" data-cmd="chase">
+                    Chenillard
+                </button>
+                <label>
+                    <small>Vitesse&nbsp;:</small>
+                    <input class="cmd-slider" type="range" data-cmd="chasespeed:"
+                           min="1" max="50" step="1" value="1">
+                </label>
+            </div>
+            <div class="cmd-box cmd-slidebox">
+                <button class="cmd-bt" data-cmd="doublechase">
+                    Aller-retour
+                </button>
+                <label>
+                    <small>Vitesse&nbsp;:</small>
+                    <input class="cmd-slider" type="range" data-cmd="dchsespeed:"
+                           min="1" max="50" step="1" value="1">
+                </label>
+            </div>
+            <div class="cmd-box cmd-slidebox">
+                <button class="cmd-bt" data-cmd="heart">
+                    <span>♥</span>
+                    Cœur
+                </button>
+                <label>
+                    <small>Vitesse&nbsp;:</small>
+                    <input class="cmd-slider" type="range" data-cmd="heartspeed:"
+                           min="-10" max="-1" step="1" value="-10">
+                </label>
+            </div>
+            <div class="cmd-box">
+                <div class="cmd-slidebox">
+                <label>
+                    <small>Vitesse&nbsp;:</small>
+                    <input class="cmd-slider" type="range" data-cmd="dchsespeed:"
+                           min="1" max="50" step="1" value="1">
+                </label>
+                </div>
+                <div class="cmd-slidebox">
+                <label>
+                    <small>Luminosité</small>
+                    <input class="cmd-slider" type="range" data-cmd="brightness:"
+                           min="1" max="255" step="1" value="128">
+                </label>
+                </div>
+
+            </div>
+            <div class="cmd-box">
+                <button class="cmd-bt" data-cmd="random">
+                    Aléatoire
+                </button>
+                <button class="cmd-bt" data-cmd="random_move">
+                    Agité
+                </button>
+            </div>
+            <div class="cmd-box">
+                <button class="cmd-bt" data-cmd="blackout">
+                    Noir
+                </button>
+            </div>
+            <div class="cmd-box">
+                <button class="cmd-bt big-bt" data-cmd="blackout" data-cmd-all="1">
+                    <span>✖</span>
+                    Éteindre
+                    <span>✖</span>
+                </button>
+            </div>
+            <br>
+            <div class="cmd-box">
+                <button class="color-bt" data-color="hsl(0, 0%, 0%)">
+                    <span class="sr-only">Noir</span>
+                    <span class="color-bt-cbox bgled-black">&nbsp;</span>
+                </button>
+                <button class="color-bt" data-color="hsl(0, 0%, 80%)">
+                    <span class="sr-only">Blanc</span>
+                    <span class="color-bt-cbox bgled-white">&nbsp;</span>
+                </button>
+                <button class="color-bt" data-color="hsl(0, 100%, 58%)">
+                    <span class="sr-only">Rouge</span>
+                    <span class="color-bt-cbox bgled-red">&nbsp;</span>
+                </button>
+                <button class="color-bt" data-color="hsl(31, 100%, 50%)">
+                    <span class="sr-only">Orange</span>
+                    <span class="color-bt-cbox bgled-orange">&nbsp;</span>
+                </button>
+                <button class="color-bt" data-color="hsl(60, 100%, 61%)">
+                    <span class="sr-only">Jaune</span>
+                    <span class="color-bt-cbox bgled-yellow">&nbsp;</span>
+                </button>
+                <button class="color-bt" data-color="hsl(98, 100%, 59%)">
+                    <span class="sr-only">Vert</span>
+                    <span class="color-bt-cbox bgled-green">&nbsp;</span>
+                </button>
+                <button class="color-bt" data-color="hsl(208, 100%, 59%)">
+                    <span class="sr-only">Bleu</span>
+                    <span class="color-bt-cbox bgled-blue">&nbsp;</span>
+                </button>
+                <button class="color-bt" data-color="hsl(280, 100%, 50%)">
+                    <span class="sr-only">Violet</span>
+                    <span class="color-bt-cbox bgled-purple">&nbsp;</span>
+                </button>
+                <button class="color-bt" data-color="hsl(0, 100%, 2%)">
+                    <span class="sr-only">{{ zml.color.lred }}</span>
+                    <span class="color-bt-cbox bgled-lred">&nbsp;</span>
+                </button>
+            </div>
+        </div>
+
+        <div id="hsl-selector-box" class="clearfix">
+            <div id="colorsample-box">
+                <div id="colorsample" style="background-color: rgb(169, 0, 255);"></div>
+                <div id="colortext">
+                    rgb(169, 0, 255);
+                    <br>
+                    hsl(280, 100, 50)
+                    <br>
+                    #a900ff
+                </div>
+            </div>
+            <div id="hsl-sliders">
+                <div class="colorslidebox">
+                    <label for="cs-hsl-h">
+                        <small>Teinte&nbsp;:</small>
+                    </label>
+                    <div id="gb-hsl-h" class="gradientbox"
+                         style="background-image: linear-gradient(to right, #f00, #ff0 16.66%, #0f0 33.33%, #0ff 50%, #00f 66.66%, #f0f 83.33%, #f00);"></div>
+                    <input id="cs-hsl-h" class="colorslider" type="range"
+                           min="0" max="360" step="1" value="280">
+                </div>
+                <div class="colorslidebox">
+                    <label for="cs-hsl-s">
+                        <small>Saturation&nbsp;:</small>
+                    </label>
+                    <div id="gb-hsl-s" class="gradientbox"
+                         style="background-image: linear-gradient(to right, hsl(280, 0%, 50%), hsl(280, 100%, 50%));"></div>
+                    <input id="cs-hsl-s" class="colorslider" type="range"
+                           min="0" max="100" step="1" value="100">
+                </div>
+                <div class="colorslidebox">
+                    <label for="cs-hsl-l">
+                        <small>Luminosité&nbsp;:</small>
+                    </label>
+                    <div id="gb-hsl-l" class="gradientbox"
+                         style="background-image: linear-gradient(to right, hsl(280, 100%, 0%), hsl(280, 100%, 50%) 50%, hsl(280, 100%, 100%));"></div>
+                    <input id="cs-hsl-l" class="colorslider" type="range"
+                           min="0" max="100" step="1" value="50">
+                </div>
+            </div>
+        </div>
+
+        <br>
+        <div class="cmd-boxes">
+            <div class="cmd-box">
+                <button class="color-bt" data-color="hsl(0, 0%, 0%)">
+                    <span class="sr-only">Blanc</span>
+                    <span class="bkcolor-bt-cbox bkled-white"></span>
+                </button>
+                <button class="color-bt" data-color="hsl(0, 100%, 0%)">
+                    <span class="sr-only">Rouge</span>
+                    <span class="bkcolor-bt-cbox bkled-red"></span>
+                </button>
+                <button class="color-bt" data-color="hsl(31, 100%, 0%)">
+                    <span class="sr-only">Orange</span>
+                    <span class="bkcolor-bt-cbox bkled-orange"></span>
+                </button>
+                <button class="color-bt" data-color="hsl(60, 100%, 0%)">
+                    <span class="sr-only">Jaune</span>
+                    <span class="bkcolor-bt-cbox bkled-yellow"></span>
+                </button>
+                <button class="color-bt" data-color="hsl(98, 100%, 0%)">
+                    <span class="sr-only">Vert</span>
+                    <span class="bkcolor-bt-cbox bkled-green"></span>
+                </button>
+                <button class="color-bt" data-color="hsl(208, 100%, 0%)">
+                    <span class="sr-only">Bleu</span>
+                    <span class="bkcolor-bt-cbox bkled-blue"></span>
+                </button>
+                <button class="color-bt" data-color="hsl(280, 100%, 0%)">
+                    <span class="sr-only">Violet</span>
+                    <span class="bkcolor-bt-cbox bkled-purple"></span>
+                </button>
+            </div>
+        </div>
+        <div id="mutable-cmd-box">
+            <label for="mutable-cmd-input">commande libre&nbsp;:</label>
+            <br>
+            <input type="text" id="mutable-cmd-input">
+            <button id="mutable-cmd-bt">
+                Envoyer
+            </button>
+        </div>
+    </section>
+
+    <footer>
+    </footer>
+
+    <script src="./serveurs.js"></script>
+    <script src="./mllc.js"></script>
+
+</div>
+</body>
+</html>
