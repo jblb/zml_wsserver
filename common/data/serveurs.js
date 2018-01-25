@@ -1,6 +1,6 @@
 var gServers = [
     {
-        name: 'Test', // test
+        name: 'Moto', // test
         url: 'ws:/ipaddress:81'
     },
     {
