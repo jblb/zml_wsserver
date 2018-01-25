@@ -520,6 +520,7 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload,
                   USE_SERIAL.printf("brightness: %d\n", s);
                   // we want in fact the opposite of s
                   pixels.setBrightness(s);
+                  pixels.show();
                 }
               }
             }
@@ -563,13 +564,21 @@ String toStringIp(IPAddress ip) {
   return res;
 }
 
-/** Redirect to captive portal if we got a request for another domain. Return true in that case so the page handler do not try to handle the request again. */
+/** Redirect to captive portal if we got a request for another domain. Return
+ * true in that case so the page handler do not try to handle the request again.
+ */
 boolean captivePortal() {
-  if (!isIp(http_server.hostHeader()) && http_server.hostHeader() != (String(MY_HOSTNAME)+".local")) {
-    Serial.print("Request redirected to captive portal");
-    http_server.sendHeader("Location", String("http://") + toStringIp(http_server.client().localIP()), true);
-    http_server.send ( 302, "text/plain", ""); // Empty content inhibits Content-length header so we have to close the socket ourselves.
-    http_server.client().stop(); // Stop is needed because we sent no content length
+  if (!isIp(http_server.hostHeader()) &&
+      http_server.hostHeader() != (String(MY_HOSTNAME) + ".local")) {
+    USE_SERIAL.println("Request redirected to captive portal");
+    http_server.sendHeader(
+        "Location",
+        String("http://") + toStringIp(http_server.client().localIP()), true);
+    http_server.send(302, "text/plain", ""); // Empty content inhibits
+                                             // Content-length header so we have
+                                             // to close the socket ourselves.
+    http_server.client()
+        .stop(); // Stop is needed because we sent no content length
     return true;
   }
   return false;
@@ -787,6 +796,9 @@ void setup() {
 
   http_server.onNotFound([]() {
     if (!handleFileRead(http_server.uri())) {
+      if (captivePortal()) {
+        return;
+      }
       USE_SERIAL.println("file not found");
       http_server.send(404, "text/plain", "FileNotFound");
     }
