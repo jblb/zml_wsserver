@@ -14,7 +14,6 @@
 #include <Hash.h>
 #include <WebSocketsServer.h>
 
-
 #include "leds_layout.h"
 #include "router_config.h"
 #include "wifi_host_config.h"
@@ -23,11 +22,11 @@
 
 #include <DNSServer.h>
 
-  // DNS server
-  const byte DNS_PORT = 53;
-  DNSServer dnsServer;
-  IPAddress apIP(192, 168, 4, 1);
-  IPAddress netMsk(255, 255, 255, 0);
+// DNS server
+const byte DNS_PORT = 53;
+DNSServer dnsServer;
+IPAddress apIP(192, 168, 4, 1);
+IPAddress netMsk(255, 255, 255, 0);
 #endif
 
 #define PORT 80
@@ -64,7 +63,7 @@ const uint32_t COLOR_SRED = pixels.Color(10, 0, 0);
 // uint8_t gColorR, gColorG, gColorB;
 // uint32_t gColor = pixels.Color(0, 0, 0);
 uint32_t gColor = COLOR_PURPLE;
-//uint32_t gColor = COLOR_SRED;
+// uint32_t gColor = COLOR_SRED;
 
 // gLastColor MUST be different than gColor
 uint32_t gLastColor = COLOR_BLACK;
@@ -543,6 +542,39 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload,
   }
 }
 
+/** Is this an IP? */
+boolean isIp(String str) {
+  for (int i = 0; i < str.length(); i++) {
+    int c = str.charAt(i);
+    if (c != '.' && (c < '0' || c > '9')) {
+      return false;
+    }
+  }
+  return true;
+}
+
+/** IP to String? */
+String toStringIp(IPAddress ip) {
+  String res = "";
+  for (int i = 0; i < 3; i++) {
+    res += String((ip >> (8 * i)) & 0xFF) + ".";
+  }
+  res += String(((ip >> 8 * 3)) & 0xFF);
+  return res;
+}
+
+/** Redirect to captive portal if we got a request for another domain. Return true in that case so the page handler do not try to handle the request again. */
+boolean captivePortal() {
+  if (!isIp(http_server.hostHeader()) && http_server.hostHeader() != (String(MY_HOSTNAME)+".local")) {
+    Serial.print("Request redirected to captive portal");
+    http_server.sendHeader("Location", String("http://") + toStringIp(http_server.client().localIP()), true);
+    http_server.send ( 302, "text/plain", ""); // Empty content inhibits Content-length header so we have to close the socket ourselves.
+    http_server.client().stop(); // Stop is needed because we sent no content length
+    return true;
+  }
+  return false;
+}
+
 // format bytes
 String formatBytes(size_t bytes) {
   if (bytes < 1024) {
@@ -640,7 +672,7 @@ String fileRead(String name) {
 }
 
 void handleServerlist() {
-	USE_SERIAL.println("handleFileRead: /serveurs.js");
+  USE_SERIAL.println("handleFileRead: /serveurs.js");
   String webscript = fileRead("/serveurs.js");
 #ifndef SOFT_AP
   String ipaddress = WiFi.localIP().toString();
@@ -697,8 +729,7 @@ void setup() {
   WiFi.hostname(MY_HOSTNAME);
   WiFi.mode(WIFI_STA);
   USE_SERIAL.printf("Wi-Fi mode set to WIFI_STA %s\n",
-                WiFi.mode(WIFI_STA) ? "" : "Failed!");
-
+                    WiFi.mode(WIFI_STA) ? "" : "Failed!");
 
 #if USE_STATIC_IP
   // Doc says it should be faster
@@ -724,7 +755,6 @@ void setup() {
   /* Setup the DNS server redirecting all the domains to the apIP */
   dnsServer.setErrorReplyCode(DNSReplyCode::NoError);
   dnsServer.start(DNS_PORT, "*", WiFi.softAPIP());
-
 
 #endif //
 
@@ -756,10 +786,10 @@ void setup() {
   // use it to load content from SPIFFS
 
   http_server.onNotFound([]() {
-    if (!handleFileRead(http_server.uri())){
+    if (!handleFileRead(http_server.uri())) {
       USE_SERIAL.println("file not found");
       http_server.send(404, "text/plain", "FileNotFound");
-  }
+    }
   });
 
   webSocket.begin();
@@ -770,7 +800,7 @@ void loop() {
   webSocket.loop();
   http_server.handleClient();
 #ifdef SOFT_AP
-   dnsServer.processNextRequest();
+  dnsServer.processNextRequest();
 #endif
   if (gNextActionTime != -1 && gNextActionTime <= millis()) {
     gCurrentAction();
