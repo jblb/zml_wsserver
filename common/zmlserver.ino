@@ -443,6 +443,36 @@ void RandomColorsMove() {
   setDelay(gVariableDChaseDelay);
 }
 
+void doState1() {
+  // chenillar glignos + stop
+  blackOut();
+  uint8_t stop_led = 2;
+  gChaseLastILed[stop_led] = 0;
+  while (gChaseLastILed[stop_led] <= gLAST_LED_OF_GROUP[stop_led]) {
+    pixels.setPixelColor(LEDS_LAYOUT[stop_led][gChaseLastILed[stop_led]],
+                         pixels.Color(255, 41, 41));
+    gChaseLastILed[stop_led]++;
+  }
+  gCurrentAction = &state1;
+  gColor = pixels.Color(255, 132, 0);
+  setVariableDoubleChaseSpeed(15);
+  state1();
+}
+
+void state1() {
+
+  for (uint8_t i = 0; i < 2; i++) {
+    if (gChaseLastILed[i] >= 0)
+      pixels.setPixelColor(LEDS_LAYOUT[i][gChaseLastILed[i]], 0);
+    gChaseLastILed[i]++;
+    if (gChaseLastILed[i] > gLAST_LED_OF_GROUP[i])
+      gChaseLastILed[i] = 0;
+    pixels.setPixelColor(LEDS_LAYOUT[i][gChaseLastILed[i]], gColor);
+  }
+  pixels.show();
+  setDelay(gVariableDChaseDelay);
+}
+
 void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload,
                     size_t lenght) {
 
@@ -534,6 +564,22 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload,
               }
             }
           }
+        }
+      }
+    } else {
+      res = sscanf(chars_payload, "state%d", &s);
+      if (res == 1) {
+        USE_SERIAL.printf("State %d\n", s);
+        switch (s) {
+        case 1:
+          doState1();
+          break;
+        case 2:
+          break;
+        case 3:
+          break;
+        case 4:
+          break;
         }
       }
     }
@@ -816,6 +862,7 @@ void setup() {
 
   webSocket.begin();
   webSocket.onEvent(webSocketEvent);
+  doState1();
 }
 
 void loop() {
