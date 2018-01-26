@@ -811,7 +811,7 @@ void setup() {
   WiFi.mode(WIFI_AP);
   WiFi.softAPConfig(apIP, apIP, netMsk);
   USE_SERIAL.print("Setting soft-AP ... ");
-  USE_SERIAL.println(WiFi.softAP("mllc") ? "Ready" : "Failed!");
+  USE_SERIAL.println(WiFi.softAP(MY_SSID) ? "Ready" : "Failed!");
   WiFi.hostname(MY_HOSTNAME);
   USE_SERIAL.print("IP address: ");
   USE_SERIAL.println(WiFi.softAPIP());
