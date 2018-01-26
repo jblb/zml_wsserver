@@ -60,9 +60,8 @@ const uint32_t COLOR_PURPLE = pixels.Color(169, 0, 255);
 const uint32_t COLOR_ORANGE = pixels.Color(255, 130, 0);
 const uint32_t COLOR_SRED = pixels.Color(10, 0, 0);
 
-
-//uint8_t gColorR, gColorG, gColorB;
-//uint32_t gColor = pixels.Color(0, 0, 0);
+// uint8_t gColorR, gColorG, gColorB;
+// uint32_t gColor = pixels.Color(0, 0, 0);
 uint32_t gColor = COLOR_PURPLE;
 // uint32_t gColor = COLOR_SRED;
 
@@ -276,14 +275,14 @@ void doubleChase() {
 }
 
 void doWipe() {
-    blackOut();
-    gCurrentAction = &wipe;
+  blackOut();
+  gCurrentAction = &wipe;
 }
 
-void wipe () {
-	USE_SERIAL.print("wipe ...\n");
-	pixels.show();
-	setDelay(gVariableDChaseDelay);
+void wipe() {
+  USE_SERIAL.print("wipe ...\n");
+  pixels.show();
+  setDelay(gVariableDChaseDelay);
 }
 
 #define MAX_STEP_FACTOR_GB4 100
@@ -421,9 +420,7 @@ uint32_t tint2rgb(uint16_t aTint) {
   uint8_t g = (uint8_t)(255 * h2rgb(TINT2RGB_V1, TINT2RGB_V2, hr));
   uint8_t b = (uint8_t)(255 * h2rgb(TINT2RGB_V1, TINT2RGB_V2, (hr - 2)));
 
-
   return pixels.Color(r, g, b);
-
 }
 
 void paintRandomColors() {
@@ -495,10 +492,8 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload,
     } else if (text == "heart") {
       doHeart();
     } else if (text == "random") {
-      USE_SERIAL.print("receive random command\n");
       paintRandomColors();
       setDelay(-1);
-      USE_SERIAL.print("random pixel colors should be painted...\n");
     } else if (text == "random_move") {
       doRandomColorsMove();
     } else if (text_length == 12 || text_length == 13 || text_length == 14) {
@@ -801,7 +796,7 @@ void setup() {
   //    }
 
   initTint2rgb();
-    pixels.setBrightness(255);
+  pixels.setBrightness(255);
 
   http_server.begin();
   http_server.on("/serveurs.js", HTTP_GET, handleServerlist);
